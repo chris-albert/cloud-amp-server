@@ -22,6 +22,7 @@ var GooglePlayService = {
       return {
         name: _.head(tracks).album,
         tracksCount: tracks.length,
+        year: _.head(tracks).year,
         duration: _.reduce(tracks,(sum,n) => sum + parseInt(n.durationMillis),0),
         tracks: tracks.map(track => {
           return {
