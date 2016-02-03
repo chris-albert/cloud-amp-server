@@ -1,8 +1,8 @@
-var express = require('express');
-var app = express();
-var cors = require('cors');
+var express   = require('express');
+var app       = express();
+var cors      = require('cors');
 var PlayMusic = require('./playmusic');
-var _ = require('lodash');
+var _         = require('lodash');
 
 //http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2013/11/Winampmain.png
 
@@ -14,30 +14,32 @@ var GooglePlayService = {
    * @param artistTracks Array of tracks for an artist
    */
   formatArtist(artistTracks) {
-    if(_.isEmpty(artistTracks)) {
+    if (_.isEmpty(artistTracks)) {
       return {name: 'Empty'};
     }
-    var albumTracks = _.toArray(_.groupBy(artistTracks,'album'));
-    var albums = _.map(albumTracks,tracks => {
+    var albumTracks = _.toArray(_.groupBy(artistTracks, 'album'));
+    var albums      = _.map(albumTracks, tracks => {
       return {
-        name: _.head(tracks).album,
+        name       : _.head(tracks).album,
         tracksCount: tracks.length,
-        year: _.head(tracks).year,
-        duration: _.reduce(tracks,(sum,n) => sum + parseInt(n.durationMillis),0),
-        tracks: tracks.map(track => {
+        year       : _.head(tracks).year,
+        duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
+        tracks     : tracks.map(track => {
           return {
-            name: track.title,
-            duration: parseInt(track.durationMillis)
+            name    : track.title,
+            duration: parseInt(track.durationMillis),
+            trackNum: track.trackNumber,
+            played  : 0
           }
         })
       };
     });
     return {
-      name: _.head(artistTracks).artist,
+      name       : _.head(artistTracks).artist,
       albumsCount: albums.length,
-      tracksCount: _.reduce(albums,(sum,n) => sum + n.tracksCount,0),
-      duration: _.reduce(albums,(sum,n) => sum + n.duration,0),
-      albums: albums
+      tracksCount: _.reduce(albums, (sum, n) => sum + n.tracksCount, 0),
+      duration   : _.reduce(albums, (sum, n) => sum + n.duration, 0),
+      albums     : albums
     };
   },
   /**
@@ -46,23 +48,23 @@ var GooglePlayService = {
    * @returns Generalize list of artist data
    */
   buildLibrary(library) {
-    var artistGrouped = _.toArray(_.groupBy(library,'artist'));
-    var artist = artistGrouped.map(this.formatArtist);
+    var artistGrouped = _.toArray(_.groupBy(library, 'artist'));
+    var artist        = artistGrouped.map(this.formatArtist);
     return {
       'artistCount': artist.length,
-      'artists': artist
+      'artists'    : artist
     };
   },
-  loadTracks(pm,accu,npt,cb) {
+  loadTracks(pm, accu, npt, cb) {
     var opts = {};
-    if(npt) {
+    if (npt) {
       opts.nextPageToken = npt;
     }
-    pm.getAllTracks(opts,(err,library) => {
-      if(library && library.data && library.data.items) {
-        var t = _.concat(accu,library.data.items);
-        if(library.nextPageToken) {
-          this.loadTracks(pm,t,library.nextPageToken,cb);
+    pm.getAllTracks(opts, (err, library) => {
+      if (library && library.data && library.data.items) {
+        var t = _.concat(accu, library.data.items);
+        if (library.nextPageToken) {
+          this.loadTracks(pm, t, library.nextPageToken, cb);
         } else {
           cb(this.buildLibrary(_.flatten(t)));
         }
@@ -70,7 +72,7 @@ var GooglePlayService = {
     })
   },
   load(res) {
-    if(cache) {
+    if (cache) {
       console.log('cache hit');
       res.send(cache);
     } else {
@@ -86,9 +88,9 @@ var GooglePlayService = {
   }
 };
 
-app.options('*',cors());
+app.options('*', cors());
 
-app.get('/', cors(),function (req, res) {
+app.get('/', cors(), function (req, res) {
   GooglePlayService.load(res);
 });
 
