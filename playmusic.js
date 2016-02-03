@@ -298,8 +298,11 @@ PlayMusic.prototype.getStreamUrl = function (id, callback) {
     url: this._mobileURL + 'mplay?' + qstring,
     options: { headers: { "X-Device-ID": that._deviceId } }
   }, function(err, data, res) {
-    if(res.statusCode === 302 && typeof res.headers.location === "string") {
-      callback(null, res.headers.location);
+      if(res.statusCode === 302 && typeof res.headers.location === "string") {
+      callback(null, {
+        token: that._token,
+        url: res.headers.location
+      });
     } else {
       callback(new Error("Unable to get stream url" + err), res.headers.location);
     }

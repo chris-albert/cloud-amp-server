@@ -23,22 +23,35 @@ var GooglePlayService = {
         name       : _.head(tracks).album,
         tracksCount: tracks.length,
         year       : _.head(tracks).year,
+        genre       : _.head(tracks).genre,
         duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
+        played  : _.reduce(tracks, (sum, n) => {
+          var i = 0;
+          try {
+            i = parseInt(n.playCount)
+          } catch (e) {}
+          return sum + i
+        },0),
         tracks     : tracks.map(track => {
           return {
             name    : track.title,
             duration: parseInt(track.durationMillis),
             trackNum: track.trackNumber,
-            played  : 0
+            played  : track.playCount || 0,
+            id      : track.nid,
+            genre   : track.genre
           }
         })
       };
     });
+
     return {
       name       : _.head(artistTracks).artist,
+      genre      : _.head(artistTracks).genre,
       albumsCount: albums.length,
       tracksCount: _.reduce(albums, (sum, n) => sum + n.tracksCount, 0),
       duration   : _.reduce(albums, (sum, n) => sum + n.duration, 0),
+      played     : _.reduce(albums, (sum, n) => sum + n.played, 0),
       albums     : albums
     };
   },
@@ -71,27 +84,48 @@ var GooglePlayService = {
       }
     })
   },
-  load(res) {
+  loadLibrary(res) {
     if (cache) {
       console.log('cache hit');
       res.send(cache);
     } else {
-      var pm = new PlayMusic();
-      pm.init({email: "", password: ""}, err => {
-        if (err) console.error(err);
+      this.getPlayMusic(pm => {
         this.loadTracks(pm, [], null, d => {
           cache = d;
           res.send(d)
-        });
-      });
+        }); 
+      })
     }
+  },
+  pm: null,
+  getPlayMusic(cb) {
+    if(this.pm) {
+      cb(this.pm);
+    } else {
+      this.pm = new PlayMusic();
+      this.pm.init({email: "", password: ""}, err => {
+        if (err) console.error(err);
+        cb(this.pm);
+      }); 
+    }
+  },
+  streamUrl(id,res) {
+    this.getPlayMusic(pm => {
+      pm.getStreamUrl(id,(e,url) => {
+        res.send(url);
+      })
+    })
   }
 };
 
 app.options('*', cors());
 
-app.get('/', cors(), function (req, res) {
-  GooglePlayService.load(res);
+app.get('/library', cors(), function (req, res) {
+  GooglePlayService.loadLibrary(res);
+});
+
+app.get('/streamUrl/:id', cors(), function (req, res) {
+  GooglePlayService.streamUrl(req.params.id,res);
 });
 
 app.listen(3000, function () {
