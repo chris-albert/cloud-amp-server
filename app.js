@@ -24,6 +24,7 @@ var GooglePlayService = {
         tracksCount: tracks.length,
         year       : _.head(tracks).year,
         genre       : _.head(tracks).genre,
+        image      : _.head(tracks).albumArtRef[0].url,
         duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
         played  : _.reduce(tracks, (sum, n) => {
           var i = 0;
@@ -48,6 +49,7 @@ var GooglePlayService = {
     return {
       name       : _.head(artistTracks).artist,
       genre      : _.head(artistTracks).genre,
+      image      : _.head(artistTracks).artistArtRef[0].url,
       albumsCount: albums.length,
       tracksCount: _.reduce(albums, (sum, n) => sum + n.tracksCount, 0),
       duration   : _.reduce(albums, (sum, n) => sum + n.duration, 0),
