@@ -6,7 +6,7 @@ var _         = require('lodash');
 
 //http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2013/11/Winampmain.png
 
-var cache = null;
+var cache = {};
 
 var GooglePlayService = {
   /**
@@ -86,48 +86,51 @@ var GooglePlayService = {
       }
     })
   },
-  loadLibrary(res) {
-    if (cache) {
+  loadLibrary(token, cb) {
+    if (cache[token]) {
       console.log('cache hit');
-      res.send(cache);
+      cb(cache[token]);
     } else {
-      this.getPlayMusic(pm => {
+      this.getPlayMusic({masterToken: token},pm => {
         this.loadTracks(pm, [], null, d => {
-          cache = d;
-          res.send(d)
+          cache[token] = d;
+          cb(d)
         }); 
       })
     }
   },
-  pm: null,
-  getPlayMusic(cb) {
-    if(this.pm) {
-      cb(this.pm);
-    } else {
-      this.pm = new PlayMusic();
-      this.pm.init({email: "", password: ""}, err => {
-        if (err) console.error(err);
-        cb(this.pm);
-      }); 
-    }
+  getToken(user,pass,cb) {
+    var pm = new PlayMusic();
+    pm.init({email: user, password: pass},t => {
+      cb(t.Token);
+    });
   },
-  streamUrl(id,res) {
-    this.getPlayMusic(pm => {
+  getPlayMusic(auth,cb) {
+    var pm = new PlayMusic();
+    pm.init(auth, err => {
+      if (err) console.error(err);
+      cb(pm);
+    });
+  },
+  streamUrl(token,id,cb) {
+    this.getPlayMusic({masterToken: token},pm => {
       pm.getStreamUrl(id,(e,url) => {
-        res.send(url);
+        cb(url);
       })
     })
   }
 };
 
-app.options('*', cors());
-
-app.get('/library', cors(), function (req, res) {
-  GooglePlayService.loadLibrary(res);
+app.get('/token', cors(), function (req, res) {
+  GooglePlayService.getToken(req.query.user,req.query.pass,d => res.send({token: d}));
 });
 
-app.get('/streamUrl/:id', cors(), function (req, res) {
-  GooglePlayService.streamUrl(req.params.id,res);
+app.get('/library', cors(), function (req, res) {
+  GooglePlayService.loadLibrary(req.query.token,d => res.send(d));
+});
+
+app.get('/stream/url/:id', cors(), function (req, res) {
+  GooglePlayService.streamUrl(req.query.token,req.params.id,d => res.send(d));
 });
 
 app.listen(3000, function () {

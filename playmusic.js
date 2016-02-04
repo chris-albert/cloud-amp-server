@@ -128,10 +128,8 @@ PlayMusic.prototype.init = function(config, callback) {
 
       if(devices.length > 0) {
         that._deviceId = devices[0].id.slice(2);
-        if(typeof callback === "function") callback();
-      } else {
-        if(typeof callback === "function") callback();
       }
+      if(typeof callback === "function") callback(data);
     });
 
   });
