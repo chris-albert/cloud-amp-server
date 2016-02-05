@@ -1,3 +1,4 @@
 .idea
 cloud-amp-server.iml
 node_modules
+out.log
