@@ -1,3 +1,7 @@
+//Set up http analytics
+require('pmx').init({
+  http : true
+});
 var express   = require('express');
 var app       = express();
 var cors      = require('cors');
@@ -138,7 +142,6 @@ app.get('/stream/url/:id', cors(), function (req, res) {
 });
 
 app.get('/stream/data', cors(), function (req, res) {
-  console.log(req.query.url);
   req.pipe(request(req.query.url)).pipe(res);
 });
 
