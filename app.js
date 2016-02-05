@@ -1,6 +1,7 @@
 var express   = require('express');
 var app       = express();
 var cors      = require('cors');
+var request   = require('request');
 var PlayMusic = require('./playmusic');
 var _         = require('lodash');
 
@@ -23,16 +24,17 @@ var GooglePlayService = {
         name       : _.head(tracks).album,
         tracksCount: tracks.length,
         year       : _.head(tracks).year,
-        genre       : _.head(tracks).genre,
+        genre      : _.head(tracks).genre,
         image      : _.head(tracks).albumArtRef[0].url,
         duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
-        played  : _.reduce(tracks, (sum, n) => {
+        played     : _.reduce(tracks, (sum, n) => {
           var i = 0;
           try {
             i = parseInt(n.playCount)
-          } catch (e) {}
+          } catch (e) {
+          }
           return sum + i
-        },0),
+        }, 0),
         tracks     : tracks.map(track => {
           return {
             name    : track.title,
@@ -91,46 +93,57 @@ var GooglePlayService = {
       console.log('cache hit');
       cb(cache[token]);
     } else {
-      this.getPlayMusic({masterToken: token},pm => {
+      this.getPlayMusic({masterToken: token}, pm => {
         this.loadTracks(pm, [], null, d => {
           cache[token] = d;
           cb(d)
-        }); 
+        });
       })
     }
   },
-  getToken(user,pass,cb) {
+  getToken(user, pass, cb) {
     var pm = new PlayMusic();
-    pm.init({email: user, password: pass},t => {
+    pm.init({email: user, password: pass}, t => {
       cb(t.Token);
     });
   },
-  getPlayMusic(auth,cb) {
+  getPlayMusic(auth, cb) {
     var pm = new PlayMusic();
     pm.init(auth, err => {
       if (err) console.error(err);
       cb(pm);
     });
   },
-  streamUrl(token,id,cb) {
-    this.getPlayMusic({masterToken: token},pm => {
-      pm.getStreamUrl(id,(e,url) => {
+  streamUrl(token, id, cb) {
+    this.getPlayMusic({masterToken: token}, pm => {
+      pm.getStreamUrl(id, (e, url) => {
         cb(url);
       })
     })
   }
 };
 
+app.use(require('express-domain-middleware'));
+
 app.get('/token', cors(), function (req, res) {
-  GooglePlayService.getToken(req.query.user,req.query.pass,d => res.send({token: d}));
+  GooglePlayService.getToken(req.query.user, req.query.pass, d => res.send({token: d}));
 });
 
 app.get('/library', cors(), function (req, res) {
-  GooglePlayService.loadLibrary(req.query.token,d => res.send(d));
+  GooglePlayService.loadLibrary(req.query.token, d => res.send(d));
 });
 
 app.get('/stream/url/:id', cors(), function (req, res) {
-  GooglePlayService.streamUrl(req.query.token,req.params.id,d => res.send(d));
+  GooglePlayService.streamUrl(req.query.token, req.params.id, d => res.send(d));
+});
+
+app.get('/stream/data', cors(), function (req, res) {
+  console.log(req.query.url);
+  req.pipe(request(req.query.url)).pipe(res);
+});
+
+app.get('/check',function(req,res) {
+  res.send("OK");
 });
 
 app.listen(3000, function () {
