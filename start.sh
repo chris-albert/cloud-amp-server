@@ -3,3 +3,5 @@
 
 echo "Running cloudamp api"
 node app.js > out.log &
+APP_PID=$!
+echo $APP_PID > APP_PID
