@@ -24,6 +24,18 @@ var GooglePlayService = {
     }
     var albumTracks = _.toArray(_.groupBy(artistTracks, 'album'));
     var albums      = _.map(albumTracks, tracks => {
+
+      var parsedTracks = tracks.map(track => {
+        return {
+          name    : track.title,
+          duration: parseInt(track.durationMillis),
+          trackNum: track.trackNumber,
+          played  : track.playCount || 0,
+          id      : track.nid,
+          genre   : track.genre
+        }
+      });
+
       return {
         name       : _.head(tracks).album,
         tracksCount: tracks.length,
@@ -31,24 +43,8 @@ var GooglePlayService = {
         genre      : _.head(tracks).genre,
         image      : _.head(tracks).albumArtRef[0].url,
         duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
-        played     : _.reduce(tracks, (sum, n) => {
-          var i = 0;
-          try {
-            i = parseInt(n.playCount)
-          } catch (e) {
-          }
-          return sum + i
-        }, 0),
-        tracks     : tracks.map(track => {
-          return {
-            name    : track.title,
-            duration: parseInt(track.durationMillis),
-            trackNum: track.trackNumber,
-            played  : track.playCount || 0,
-            id      : track.nid,
-            genre   : track.genre
-          }
-        })
+        played     : _.reduce(parsedTracks, (sum, n) => sum + n.played,0),
+        tracks     : parsedTracks
       };
     });
 
@@ -93,7 +89,7 @@ var GooglePlayService = {
     })
   },
   loadLibrary(token, cb) {
-    if (cache[token]) {
+    if (cache[token] && false) {
       console.log('cache hit');
       cb(cache[token]);
     } else {
