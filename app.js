@@ -132,6 +132,13 @@ var GooglePlayService = {
   clearCache(token,cb) {
     delete cache[token];
     cb('ok');
+  },
+  incrementPlayCount(token,id,cb) {
+    this.getPlayMusic({masterToken: token}, pm => {
+      pm.incrementTrackPlaycount(id,r => {
+        cb(true);
+      })
+    })
   }
 };
 
@@ -155,6 +162,10 @@ app.get('/library/raw', cors(), function (req, res) {
 
 app.get('/stream/url/:id', cors(), function (req, res) {
   GooglePlayService.streamUrl(req.query.token, req.params.id, d => res.send(d));
+});
+
+app.get('/count/:id', cors(), function (req, res) {
+  GooglePlayService.incrementPlayCount(req.query.token, req.params.id, d => res.send({status: d}));
 });
 
 app.get('/stream/data', cors(), function (req, res) {
