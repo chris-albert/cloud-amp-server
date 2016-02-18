@@ -65,7 +65,7 @@ var GooglePlayService = {
    * @returns Generalize list of artist data
    */
   buildLibrary(library) {
-    var artistGrouped = _.toArray(_.groupBy(library, 'artist'));
+    var artistGrouped = _.toArray(_.groupBy(library, 'albumArtist'));
     var artist        = artistGrouped.map(this.formatArtist);
     return {
       'artistCount': artist.length,
@@ -83,9 +83,16 @@ var GooglePlayService = {
         if (library.nextPageToken) {
           this.loadTracks(pm, t, library.nextPageToken, cb);
         } else {
-          cb(this.buildLibrary(_.flatten(t)));
+          cb(_.flatten(t));
         }
       }
+    })
+  },
+  rawLibrary(token,cb) {
+    this.getPlayMusic({masterToken: token}, pm => {
+      this.loadTracks(pm,[],null,d => {
+        cb(d);
+      })
     })
   },
   loadLibrary(token, cb) {
@@ -95,8 +102,9 @@ var GooglePlayService = {
     } else {
       this.getPlayMusic({masterToken: token}, pm => {
         this.loadTracks(pm, [], null, d => {
-          cache[token] = d;
-          cb(d)
+          var built = this.buildLibrary(d);
+          cache[token] = built;
+          cb(built);
         });
       })
     }
@@ -120,6 +128,10 @@ var GooglePlayService = {
         cb(url);
       })
     })
+  },
+  clearCache(token,cb) {
+    delete cache[token];
+    cb('ok');
   }
 };
 
@@ -131,6 +143,14 @@ app.get('/token', cors(), function (req, res) {
 
 app.get('/library', cors(), function (req, res) {
   GooglePlayService.loadLibrary(req.query.token, d => res.send(d));
+});
+
+app.get('/library/clear', cors(), function (req, res) {
+  GooglePlayService.clearCache(req.query.token, d => res.send({status: d}));
+});
+
+app.get('/library/raw', cors(), function (req, res) {
+  GooglePlayService.rawLibrary(req.query.token, d => res.send(d));
 });
 
 app.get('/stream/url/:id', cors(), function (req, res) {
