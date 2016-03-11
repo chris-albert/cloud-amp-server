@@ -36,7 +36,7 @@ var GooglePlayService = {
         genre      : _.head(tracks).genre,
         image      : _.head(tracks).albumArtRef[0].url,
         duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
-        played     : _.reduce(parsedTracks, (sum, n) => sum + n.played,0),
+        played     : _.reduce(parsedTracks, (sum, n) => sum + n.played, 0),
         tracks     : parsedTracks
       };
     });
@@ -81,9 +81,9 @@ var GooglePlayService = {
       }
     })
   },
-  rawLibrary(token,cb) {
+  rawLibrary(token, cb) {
     this.getPlayMusic({masterToken: token}, pm => {
-      this.loadTracks(pm,[],null,d => {
+      this.loadTracks(pm, [], null, d => {
         cb(d);
       })
     })
@@ -95,7 +95,7 @@ var GooglePlayService = {
       cb(pm);
     });
   },
-  clearCache(token,cb) {
+  clearCache(token, cb) {
     delete cache[token];
     cb('ok');
   },
@@ -118,9 +118,13 @@ var GooglePlayService = {
   },
   getToken(user, pass) {
     var pm = new PlayMusic();
-    return new RSVP.Promise(cb => {
+    return new RSVP.Promise((cb, eb) => {
       pm.init({email: user, password: pass}, t => {
-        cb(t.Token);
+        if (t.Token) {
+          cb(t.Token);
+        } else {
+          eb(t)
+        }
       });
     });
   },
@@ -133,7 +137,7 @@ var GooglePlayService = {
       })
     });
   },
-  incrementPlayCount(token,id) {
+  incrementPlayCount(token, id) {
     return new RSVP.Promise(cb => {
       this.getPlayMusic({masterToken: token}, pm => {
         pm.incrementTrackPlaycount(id, r => {
