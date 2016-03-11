@@ -12,6 +12,7 @@ module.exports = {
     return this.getService(type).streamUrl(token, id);
   },
   incrementPlayCount(type, token, id) {
+    console.log("here: " + type + ": " + id);
     return this.getService(type).incrementPlayCount(token, id);
   },
   getService(type) {

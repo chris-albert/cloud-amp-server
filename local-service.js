@@ -3,22 +3,14 @@ var _    = require('lodash');
 var UUID = require('node-uuid');
 var RSVP = require('rsvp');
 
-var publicAccessKey = 'AKIAJC677EUQHIRMS2FA';
-var publicSecretKey = '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';
-
 AWS.config.region = 'us-west-1';
 var s3bucket      = new AWS.S3({
   params         : {
     Bucket: 'io.cloudamp'
-  },
-  accessKeyId    : publicAccessKey,
-  secretAccessKey: publicSecretKey
+  }
 });
 
-var dynamoDB = new AWS.DynamoDB({
-  accessKeyId    : publicAccessKey,
-  secretAccessKey: publicSecretKey
-});
+var dynamoDB = new AWS.DynamoDB();
 
 var cloudAmpTable = 'cloudamp_media';
 
@@ -50,6 +42,7 @@ module.exports = {
     });
   },
   incrementPlayCount(token, id) {
+    console.log(id);
     var params = {
       TableName                : cloudAmpTable,
       Key                      : {
@@ -66,7 +59,11 @@ module.exports = {
       ReturnValues             : "UPDATED_NEW"
     };
     return new RSVP.Promise((cb, eb) => {
+      console.log('before resp');
       dynamoDB.updateItem(params, (e, d) => {
+        console.log('in resp');
+        console.log(d);
+        console.log(e);
         if (d) {
           cb(true)
         }
