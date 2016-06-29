@@ -17,8 +17,8 @@ var DispatchService = require('./dispatch-service');
 app.use(require('express-domain-middleware'));
 
 app.get('/token', cors(), function (req, res) {
-  GooglePlayService.getToken(req.query.user, req.query.pass)
-    .then(d => res.send({token: d}))
+  DispatchService.getToken(req.query.source,req.query)
+    .then(d => res.send(d))
     .catch(e => res.send({error: 'Login unsuccessful'}));
 });
 
@@ -41,7 +41,6 @@ app.get('/count/:id', cors(), function (req, res) {
 app.get('/stream/data', cors(), function (req, res) {
   req.pipe(request(req.query.url)).pipe(res);
 });
-
 
 
 

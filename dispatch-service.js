@@ -1,9 +1,10 @@
 var LocalService      = require('./local-service');
 var GooglePlayService = require('./google-service');
+var SpotifyService = require('./spotify-service');
 
 module.exports = {
-  getToken(type, user, pass) {
-    return this.getService(type).getToken(user, pass);
+  getToken(type, data) {
+    return this.getService(type).getToken(data);
   },
   loadLibrary(type, token) {
     return this.getService(type).loadLibrary(token);
@@ -16,11 +17,14 @@ module.exports = {
     return this.getService(type).incrementPlayCount(token, id);
   },
   getService(type) {
+    console.log(type);
     switch (type) {
       case 'google':
         return GooglePlayService;
       case 'cloudamp':
         return LocalService;
+      case 'spotify':
+        return SpotifyService;
       default:
         console.error('Don\'t know about service [' + type + ']');
     }

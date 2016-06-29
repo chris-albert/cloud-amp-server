@@ -116,12 +116,12 @@ var GooglePlayService = {
       }
     });
   },
-  getToken(user, pass) {
+  getToken(data) {
     var pm = new PlayMusic();
     return new RSVP.Promise((cb, eb) => {
-      pm.init({email: user, password: pass}, t => {
+      pm.init({email: data.user, password: data.pass}, t => {
         if (t.Token) {
-          cb(t.Token);
+          cb({token: t.Token});
         } else {
           eb(t)
         }
