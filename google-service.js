@@ -96,16 +96,19 @@ var GooglePlayService = {
     });
   },
   clearCache(token, cb) {
+    console.log('clearing cache: ' + token);
     delete cache[token];
     cb('ok');
   },
   //Below here is the public api for google
   loadLibrary(token) {
     return new RSVP.Promise(cb => {
+      console.log('token: ' + token);
       if (cache[token]) {
         console.log('cache hit');
         cb(cache[token]);
       } else {
+        console.log('not cache hit');
         this.getPlayMusic({masterToken: token}, pm => {
           this.loadTracks(pm, [], null, d => {
             var built    = this.buildLibrary(d);
