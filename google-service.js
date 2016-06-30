@@ -104,10 +104,10 @@ var GooglePlayService = {
   loadLibrary(token) {
     return new RSVP.Promise(cb => {
       console.log('token: ' + token);
-      if (cache[token]) {
-        console.log('cache hit');
-        cb(cache[token]);
-      } else {
+      //if (cache[token]) {
+      //  console.log('cache hit');
+      //  cb(cache[token]);
+      //} else {
         console.log('not cache hit');
         this.getPlayMusic({masterToken: token}, pm => {
           this.loadTracks(pm, [], null, d => {
@@ -115,8 +115,8 @@ var GooglePlayService = {
             cache[token] = built;
             cb(built);
           });
-        })
-      }
+        });
+      //}
     });
   },
   getToken(data) {
