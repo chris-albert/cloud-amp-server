@@ -18,4 +18,10 @@ Then to run use either
 or, if you want auto reload then use
 `nodemon app.js`
 
-
+# Running the server on cloudamp.io
+go to directory
+`cd /opt/api`
+stop existing process
+`pm2 stop all`
+start process
+`pm2 start app.js -i 4`
