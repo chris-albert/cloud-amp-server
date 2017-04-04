@@ -13,6 +13,11 @@ var DispatchService = require('./dispatch-service');
 
 //http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2013/11/Winampmain.png
 
+var corsOptions = {
+  origin: "*",
+  allowedHeaders: ['Content-Length','Range','If-None-Match'],
+  exposedHeaders: ['Content-Length'],
+};
 
 app.use(require('express-domain-middleware'));
 
@@ -24,7 +29,7 @@ app.get('/token', cors(), function (req, res) {
 
 
 app.get('/library', cors(), function (req, res) {
-  DispatchService.loadLibrary(req.query.source,req.query.token)
+  DispatchService.loadLibrary(req.query.source,req.query.token,req.query)
     .then(d => res.send(d));
 });
 
@@ -38,7 +43,8 @@ app.get('/count/:id', cors(), function (req, res) {
     .then(d => res.send({status: d}));
 });
 
-app.get('/stream/data', cors(), function (req, res) {
+app.options('/stream/data', cors(corsOptions)); //Enable pre-flight
+app.get('/stream/data', cors(corsOptions), function (req, res) {
   req.pipe(request(req.query.url)).pipe(res);
 });
 
@@ -50,6 +56,11 @@ app.get('/library/clear', cors(), function (req, res) {
 
 app.get('/library/raw', cors(), function (req, res) {
   GooglePlayService.rawLibrary(req.query.token, d => res.send(d));
+});
+
+app.get('/search',cors(),function(req,res) {
+  GooglePlayService.search(req.query.token, req.query.query)
+    .then(d => res.send(d));
 });
 
 app.get('/check',function(req,res) {

@@ -102,3 +102,55 @@ var ts = { kind: 'sj#track',
   artistId: [ 'A4saifqiazru565jhrrm6d72jaa' ],
   nid: 'Tndra6mpptiqfqr4je2v7zotqhm',
   primaryVideo: { kind: 'sj#video', id: '-CmadmM5cOk', thumbnails: [ [Object] ] } }
+
+
+
+
+
+
+
+//Tidal album tracks response
+
+
+var a = {
+  "limit":14,
+  "offset":0,
+  "totalNumberOfItems":14,
+  "items":[
+  {
+    "id":55163274,
+    "title":"Drive My Car",
+    "duration":148,
+    "replayGain":-6.81,
+    "peak":0.949432,
+    "allowStreaming":true,
+    "streamReady":true,
+    "streamStartDate":"2015-12-24T00:00:00.000+0000",
+    "premiumStreamingOnly":false,
+    "trackNumber":1,
+    "volumeNumber":1,
+    "version":"Remastered",
+    "popularity":83,
+    "copyright":"(P) 2009 Calderstone Productions Limited (a division of Universal Music Group)",
+    "url":"http://www.tidal.com/track/55163274",
+    "isrc":"GBAYE0601479",
+    "explicit":false,
+    "artist":{
+      "id":3634161,
+      "name":"The Beatles",
+      "type":"MAIN"
+    },
+    "artists":[
+      {
+        "id":3634161,
+        "name":"The Beatles",
+        "type":"MAIN"
+      }
+    ],
+    "album":{
+      "id":55163273,
+      "title":"Rubber Soul (Remastered)",
+      "cover":"fbdf8b8d-500d-4185-b4f3-4bea56893cf7"
+    }
+  },
+]}

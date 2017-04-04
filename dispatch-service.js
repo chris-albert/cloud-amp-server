@@ -1,13 +1,14 @@
 var LocalService      = require('./local-service');
 var GooglePlayService = require('./google-service');
 var SpotifyService = require('./spotify-service');
+var TidalService = require('./tidal-service');
 
 module.exports = {
   getToken(type, data) {
     return this.getService(type).getToken(data);
   },
-  loadLibrary(type, token) {
-    return this.getService(type).loadLibrary(token);
+  loadLibrary(type, token, options) {
+    return this.getService(type).loadLibrary(token, options);
   },
   streamUrl(type, token, id) {
     return this.getService(type).streamUrl(token, id);
@@ -25,6 +26,8 @@ module.exports = {
         return LocalService;
       case 'spotify':
         return SpotifyService;
+      case 'tidal':
+        return TidalService;
       default:
         console.error('Don\'t know about service [' + type + ']');
     }

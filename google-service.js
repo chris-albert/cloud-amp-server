@@ -41,10 +41,14 @@ var GooglePlayService = {
       };
     });
 
+    var image = "";
+    if(!_.isEmpty(_.head(artistTracks).artistArtRef)) {
+      image = _.head(artistTracks).artistArtRef[0].url;
+    }
     return {
       name       : _.head(artistTracks).artist,
       genre      : _.head(artistTracks).genre,
-      image      : _.head(artistTracks).artistArtRef[0].url,
+      image      : image,
       albumsCount: albums.length,
       tracksCount: _.reduce(albums, (sum, n) => sum + n.tracksCount, 0),
       duration   : _.reduce(albums, (sum, n) => sum + n.duration, 0),
@@ -151,6 +155,28 @@ var GooglePlayService = {
   },
   streamData(url) {
 
+  },
+  search(token,query) {
+    return new RSVP.Promise(cb => {
+      this.getPlayMusic({masterToken: token}, pm => {
+        pm.search(query, 10, (e, data) => {
+          console.log(e);
+          console.log(data);
+          cb(this.parseSearchData(data));
+        })
+      })
+    });
+  },
+  parseSearchData(data) {
+    return _.filter(_.map(data.entries,item => {
+      if(item.type === '2') {
+        return {
+          type: 'artist',
+          label: item.artist.name,
+          value: item.artist.artistId
+        }
+      }
+    }),i => i);
   }
 };
 
