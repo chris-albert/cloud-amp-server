@@ -126,6 +126,7 @@ PlayMusic.prototype.init = function(config, callback) {
         return d.deviceType === 2 || d.deviceType === 3;
       });
 
+      console.log('Devices', devices);
       if(devices.length > 0) {
         var id = devices[0].id;
         if (devices[0].deviceType === 2) {
