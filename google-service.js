@@ -140,7 +140,10 @@ var GooglePlayService = {
     return new RSVP.Promise(cb => {
       this.getPlayMusic({masterToken: token}, pm => {
         pm.getStreamUrl(id, (e, url) => {
-          cb(url);
+          cb({
+            token: token,
+            url: url
+          });
         })
       })
     });
