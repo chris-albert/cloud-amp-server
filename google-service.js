@@ -1,6 +1,7 @@
-var PlayMusic = require('./playmusic');
-var _         = require('lodash');
-var RSVP      = require('rsvp');
+const PlayMusic = require('./playmusic-new');
+//const PlayMusicNew = require('./playmusic-name');
+const _         = require('lodash');
+const RSVP      = require('rsvp');
 
 //http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2013/11/Winampmain.png
 

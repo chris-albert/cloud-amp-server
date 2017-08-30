@@ -24,7 +24,10 @@ app.use(require('express-domain-middleware'));
 app.get('/token', cors(), function (req, res) {
   DispatchService.getToken(req.query.source,req.query)
     .then(d => res.send(d))
-    .catch(e => res.send({error: 'Login unsuccessful'}));
+    .catch(e => {
+      console.error('Login error', e);
+      res.send({error: 'Login unsuccessful'})
+    });
 });
 
 
