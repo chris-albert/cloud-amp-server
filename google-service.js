@@ -48,7 +48,7 @@ var GooglePlayService = {
           tracks     : parsedTracks
         };
       } else {
-        return {};
+        return null;
       }
     }));
 
