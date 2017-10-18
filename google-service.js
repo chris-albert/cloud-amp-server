@@ -17,7 +17,7 @@ var GooglePlayService = {
       return {name: 'Empty'};
     }
     var albumTracks = _.toArray(_.groupBy(artistTracks, 'album'));
-    var albums      = _.map(albumTracks, tracks => {
+    var albums      = _.compact(_.map(albumTracks, tracks => {
 
       var parsedTracks = tracks.map(track => {
         return {
@@ -50,7 +50,7 @@ var GooglePlayService = {
       } else {
         return {};
       }
-    });
+    }));
 
     var image = "";
     if(!_.isEmpty(_.head(artistTracks).artistArtRef)) {
