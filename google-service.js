@@ -29,22 +29,25 @@ var GooglePlayService = {
           genre   : track.genre
         }
       });
+      if(_.length(tracks) > 0) {
+        var albumArtUrl = "";
+        if(_.head(tracks).albumArtRef[0]) {
+          albumArtRef = _.head(tracks).albumArtRef[0].url;
+        }
 
-      var albumArtUrl = "";
-      if(_.head(tracks).albumArtRef[0]) {
-        albumArtRef = _.head(tracks).albumArtRef[0].url;
+        return {
+          name       : _.head(tracks).album,
+          tracksCount: tracks.length,
+          year       : _.head(tracks).year,
+          genre      : _.head(tracks).genre,
+          image      : albumArtUrl,
+          duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
+          played     : _.reduce(parsedTracks, (sum, n) => sum + n.played, 0),
+          tracks     : parsedTracks
+        };
+      } else {
+        return {};
       }
-
-      return {
-        name       : _.head(tracks).album,
-        tracksCount: tracks.length,
-        year       : _.head(tracks).year,
-        genre      : _.head(tracks).genre,
-        image      : albumArtUrl,
-        duration   : _.reduce(tracks, (sum, n) => sum + parseInt(n.durationMillis), 0),
-        played     : _.reduce(parsedTracks, (sum, n) => sum + n.played, 0),
-        tracks     : parsedTracks
-      };
     });
 
     var image = "";
