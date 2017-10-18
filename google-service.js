@@ -29,7 +29,7 @@ var GooglePlayService = {
           genre   : track.genre
         }
       });
-      if(_.length(tracks) > 0) {
+      if(_.size(tracks) > 0) {
         var albumArtUrl = "";
         if(_.head(tracks).albumArtRef[0]) {
           albumArtRef = _.head(tracks).albumArtRef[0].url;
