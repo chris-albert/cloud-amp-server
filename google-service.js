@@ -34,7 +34,7 @@ var GooglePlayService = {
         if(_.head(tracks).albumArtRef && _.head(tracks).albumArtRef[0]) {
           albumArtUrl = _.head(tracks).albumArtRef[0].url;
         } else {
-          console.log('no album art for', _.head(tracks).album);
+          console.log('no album art for', _.head(tracks));
         }
 
         return {
