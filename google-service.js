@@ -31,7 +31,7 @@ var GooglePlayService = {
       });
       if(_.size(tracks) > 0) {
         var albumArtUrl = "";
-        if(_.head(tracks).albumArtRef[0]) {
+        if(_.head(tracks).albumArtRef && _.head(tracks).albumArtRef[0]) {
           albumArtRef = _.head(tracks).albumArtRef[0].url;
         }
 
